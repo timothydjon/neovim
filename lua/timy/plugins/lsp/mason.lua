@@ -50,5 +50,25 @@ return {
 				"eslint_d", -- js linter
 			},
 		})
+		-- Auto-command to run eslint_d --fix on save
+		vim.api.nvim_create_autocmd("BufWritePost", {
+			pattern = { "*.js", "*.jsx", "*.ts", "*.tsx" },
+			callback = function()
+				-- Debugging message to ensure the auto-command is triggered
+				-- print("Running eslint_d --fix on " .. vim.fn.expand("%:p"))
+
+				-- Properly escape the file path
+				local file_path = vim.fn.expand("%:p"):gsub("([%(%)%[%]])", "\\%1")
+
+				-- Execute eslint_d --fix and capture the result
+				local result = vim.fn.system("eslint_d --fix " .. file_path)
+
+				-- Optional: print result for debugging purposes
+				-- print("eslint_d result: " .. result)
+
+				-- Reload the buffer to reflect the changes made by eslint_d --fix
+				vim.cmd("edit")
+			end,
+		})
 	end,
 }
